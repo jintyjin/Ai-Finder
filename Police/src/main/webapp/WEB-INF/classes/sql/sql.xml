@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="sql">
+	<select id="login" parameterType="com.refa.ai.dto.UserDto" resultType="com.refa.ai.dto.UserDto">
+		select *
+		from police.userinfo
+		where login_id = #{login_id};
+	</select>
+	
+	<select id="selectRecentCase" resultType="String">
+		select "case_json" ->> 'case_num' from police.caseinfo order by case_idx desc limit 1;
+	</select>
+	
+	<insert id="insertCase" parameterType="String">
+		insert into police.caseinfo (case_json) values (#{caseInfo}::json);
+	</insert>
+	
+	<insert id="updateCase" parameterType="java.util.HashMap">
+		update police.caseinfo 
+		set "case_json" = "case_json"::jsonb || 
+		json_build_object(
+		'checkedYellow', #{checkedYellow},
+		'checkedGray', #{checkedGray},
+		'checkedTrash', #{checkedTrash},
+		'checkedConfidence', #{checkedConfidence})::jsonb
+		where "case_json" ->> 'case_num' = #{case_num};
+	</insert>
+	
+	<insert id="insertGallery" parameterType="String">
+		insert into police.galleryinfo (gallery_json)
+		values (#{info}::json);
+		<!-- values (json_build_object(
+		'gallery_path',#{gallery_path},
+		'login_id',#{login_id}
+		)); -->
+	</insert>
+	
+	<select id="updateGallery" parameterType="com.refa.ai.dto.GalleryDto" resultType="String">
+		with rows as (
+			update police.galleryinfo 
+			set "gallery_json" = "gallery_json"::jsonb || 
+			json_build_object(
+			'object_list', #{object_list})::jsonb
+			where "gallery_json" ->> 'original_image' = #{gallery_path} returning "gallery_json"
+		) select * from rows;
+			
+	</select>
+	
+	<insert id="updateCase2" parameterType="java.util.HashMap">
+		update police.caseinfo 
+		set "case_json" = "case_json"::jsonb || 
+		json_build_object(
+		'timeTaken', #{timeTaken},
+		'timeRemaining', #{timeRemaining},
+		'perTime', #{perTime},
+		'isFailed', #{isFailed})::jsonb
+		where "case_json" ->> 'case_num' = #{case_num};
+	</insert>
+	
+	<insert id="updateCase3" parameterType="com.refa.ai.dto.CaseDto">
+		update police.caseinfo 
+		set "case_json" = "case_json"::jsonb || 
+		json_build_object(
+		'tagList', #{tagList})::jsonb
+		where "case_json" ->> 'case_num' = #{case_num};
+	</insert>
+	
+	<insert id="deleteAsync" parameterType="com.refa.ai.dto.CaseDto">
+		update police.caseinfo 
+		set "case_json" = "case_json"::jsonb || 
+		json_build_object(
+		'isFailed', #{isFailed})::jsonb
+		where "case_json" ->> 'case_num' = #{case_num};
+	</insert>
+	
+	<insert id="updateDash" parameterType="com.refa.ai.dto.CaseDto">
+		update police.caseinfo
+		set "case_json" = "case_json"::jsonb || 
+		json_build_object(
+		'roiCount', #{roiCount})::jsonb
+		where "case_json" ->> 'case_num' = #{case_num};
+	</insert>
+	
+	<select id="listGallery" parameterType="String" resultType="String">
+		select "gallery_json"
+		from police.galleryinfo
+		where split_part("gallery_json" ->> 'image', '/', 5) = #{caseNum}
+		order by gallery_idx asc;
+		<!-- select "gallery_json"
+		from police.galleryinfo
+		where split_part("gallery_json" ->> 'image', '/', 5) = (select split_part("gallery_json" ->> 'image', '/', 5)
+		from police.galleryinfo
+		where "gallery_json" ->> 'login_id' = #{login_id}
+		order by gallery_idx desc
+		limit 1); -->
+	</select>
+	
+	<select id="selectCaseInfo" parameterType="com.refa.ai.dto.UserDto" resultType="String">
+		select "case_json"
+		from police.caseinfo
+		where "case_json" ->> 'login_id' = #{login_id}
+		and "case_json" ->> 'isFailed' = 'N'
+		<!-- and ("case_json" ->> 'count')::int > 0 -->
+		order by case_idx desc
+		limit 1;
+	</select>
+	
+	<insert id="updateUserGallery" parameterType="com.refa.ai.dto.UserDto">
+		update police.userinfo
+		set
+		login_gallery = #{login_gallery},
+		login_confidence = #{login_confidence}
+		where login_id = #{login_id};
+	</insert>
+	
+	<insert id="updateFavorites" parameterType="java.util.Map">
+		update police.gallery_info
+		set gallery_favorites = #{gallery_favorites}
+		where gallery_idx = #{gallery_idx};
+	</insert>
+	
+	<insert id="insertRoi" parameterType="String">
+		insert into police.roiinfo (roi_json) values (#{roiInfo}::json);
+	</insert>
+	
+	<insert id="insertDash" parameterType="String">
+		insert into police.dashboardinfo (dash_json) values (#{dashInfo}::json);
+		<!-- insert into police.dashboardinfo (dash_json) 
+		values (json_build_object(
+		'roi', replace(#{roi}, '\\', ''),
+		'hHeight', #{hHeight},
+		'hWidth', #{hWidth},
+		'img_name', #{img_name},
+		'crop_name', #{crop_name},
+		'roiNum', #{roiNum},
+		'favorites', #{favorites},
+		'login_id', #{login_id})
+		); -->
+	</insert>
+	
+	<select id="listDash" parameterType="com.refa.ai.dto.UserDto" resultType="String">
+		select "dash_json"
+		from police.dashboardinfo
+		where split_part("dash_json" ->> 'crop_name', '/', 5) = #{caseNum}
+		order by ("dash_json" ->> 'roiNum')::integer asc;
+		<!-- select "dash_json"
+		from police.dashboardinfo
+		where split_part("dash_json" ->> 'crop_name', '/', 5) = (select split_part("dash_json" ->> 'crop_name', '/', 5)
+		from police.dashboardinfo
+		where "dash_json" ->> 'login_id' = #{login_id}
+		order by dash_idx desc
+		limit 1)
+		order by dash_idx asc; -->
+	</select>
+	
+	<insert id="insertGpsInfo" parameterType="com.refa.ai.dto.GpsDto">
+		insert into police.gpsInfo (gps_json)
+		values (json_build_object(
+			'status', #{status},
+			'caseNum', #{caseNum},
+			'tmpNum', #{tmpNum},
+			'color', #{color}
+		));
+
+	</insert>
+	
+	<insert id="updateGpsInfo" parameterType="com.refa.ai.dto.GpsDto">
+		update police.gpsinfo
+		set "gps_json" = "gps_json"::jsonb || 
+		json_build_object(
+		'status', #{status},
+		'color', #{color})::jsonb
+		where "gps_json" ->> 'caseNum' = #{caseNum}
+		and "gps_json" ->> 'tmpNum' = #{tmpNum};
+	</insert>
+	
+	<select id="selectGpsInfo" parameterType="String" resultType="String">
+		select "gps_json"
+		from police.gpsinfo
+		where "gps_json" ->> 'caseNum' = #{caseNum}
+		order by gps_idx asc;
+	</select>
+	
+	<select id="selectGps_info" parameterType="Integer" resultType="java.util.Map">
+		select * from police.gps_info
+		where case_idx = #{case_idx} and gps_wtmx is not null and gps_wtmy is not null
+		order by gps_idx asc;
+	</select>
+	
+	<select id="selectVersionInfo" parameterType="String" resultType="com.refa.ai.dto.VersionDto">
+		select * from police.versioninfo
+		where version_name = #{version_name}
+	</select>
+	
+	<insert id="updateCode" parameterType="com.refa.ai.dto.VersionDto">
+		update police.versioninfo
+		set client_code = #{client_code}
+		where version_name = #{version_name};
+	</insert>
+	
+	<!-- <select id="selectAllCase" parameterType="String" resultType="java.util.Map">
+		select (ROW_NUMBER() OVER()) AS row_num, a.*
+		from (
+			select *
+			from police.caseinfo
+			where "case_json" ->> 'login_id' = #{login_id}
+			and "case_json" ->> 'isFailed' = 'N'
+			and "case_json" ->> 'analyze_content' is not null
+			order by case_idx desc
+		) a;
+	</select> -->
+	
+	<select id="selectAllCase" parameterType="String" resultType="java.util.Map">
+		select (ROW_NUMBER() OVER()) AS row_num, a.case_idx, ARRAY_TO_STRING(ARRAY_AGG(a.count),', ') as tag_list, c.*
+		from (	
+			SELECT
+				gallery_class_name || ' : ' || COUNT(gallery_class_name) AS COUNT,
+				case_idx
+			FROM
+				police.gallery_info
+			GROUP BY
+				gallery_class_name,case_idx
+			order by case_idx desc
+		) a
+		join police.case_info as c
+		on a.case_idx = c.case_idx
+		where c.login_id = #{login_id} and case_progress = 100
+		group by a.case_idx, c.case_idx
+		order by a.case_idx desc
+	</select>
+	
+	<insert id="updateImageTime" parameterType="com.refa.ai.dto.CaseDto">
+		update police.caseinfo 
+		set "case_json" = "case_json"::jsonb || 
+		json_build_object(
+		'image_time', #{image_time},
+		'analyze_content', #{analyze_content})::jsonb
+		where "case_json" ->> 'case_num' = #{case_num};
+	</insert>
+	
+	<select id="selectEndCase" parameterType= "com.refa.ai.dto.CaseDto" resultType = "com.refa.ai.dto.CaseJsonDto">
+		select *
+		from police.caseinfo
+		where "case_json" ->> 'case_num' = #{case_num}
+		limit 1;
+	</select>
+	
+	<select id="selectCase" parameterType="com.refa.ai.dto.UserDto" resultType="String">
+		select "case_json"
+		from police.caseinfo
+		where "case_json" ->> 'case_num' = #{caseNum}
+		and "case_json" ->> 'isFailed' = 'N';
+	</select>
+	
+	<insert id="updateAnalyzeContent" parameterType="com.refa.ai.dto.CaseDto">
+		update police.caseinfo 
+		set "case_json" = "case_json"::jsonb || 
+		json_build_object(
+		'analyze_content', #{analyze_content})::jsonb
+		where "case_json" ->> 'case_num' = #{case_num};
+	</insert>
+	
+	<delete id="deleteCaseOne" parameterType="String">
+		delete from police.caseinfo
+		where "case_json" ->> 'case_num' = #{caseNum};
+	</delete>
+	
+	<delete id="deleteDashInfo" parameterType="String">
+		delete from police.dashboardinfo
+		where "dash_json" ->> 'case_num' = #{caseNum};
+	</delete>
+	
+	<delete id="deleteGalleryInfo" parameterType="String">
+		delete from police.galleryinfo
+		where split_part("gallery_json" ->> 'image', '/', 5) = #{caseNum};
+	</delete>
+	
+	<delete id="deleteGpsInfo" parameterType="String">
+		delete from police.gpsinfo
+		where "gps_json" ->> 'caseNum' = #{caseNum};
+	</delete>
+	
+	<select id="insertCase_info" parameterType="java.util.Map" resultType="Integer">
+		INSERT INTO police.case_info (
+			login_id, case_content, case_time, case_taken, case_image_count, case_roi_count
+		) VALUES (
+			#{login_id}, #{analyze_content}, #{case_time}, #{case_taken}, #{case_image_count}, #{case_roi_count}
+		)
+		returning case_idx;
+	</select>
+	
+	<insert id="insertGps_info" parameterType="java.util.Map">
+		INSERT INTO police.gps_info(
+			gps_wtmX, gps_wtmY, gps_color, gps_status, gps_image, gps_imgName, gps_imgTime, case_idx, gps_width, gps_height
+		)
+		VALUES (
+			#{gps_wtmX}, #{gps_wtmY}, #{gps_color}, #{gps_status}, #{gps_image}, #{gps_imgName}, #{gps_imgTime}::timestamp, #{case_idx}, #{gps_width}, #{gps_height}
+		);
+	</insert>
+	
+	<insert id="updateCase_time" parameterType="java.util.Map">
+		update police.case_info
+		set case_time = #{case_time}
+		where case_idx = #{case_idx};
+	</insert>
+	
+	<select id="insertGallery_info" parameterType="java.util.Map" resultType="Integer">
+		INSERT INTO police.gallery_info (
+			gallery_crop_name, gallery_imgName, gallery_roiNum, gallery_confidence, gallery_class_name, gallery_colors, case_idx, gallery_x, gallery_y, gallery_width, gallery_height 
+		)
+		VALUES (
+			#{gallery_crop_name}, #{gallery_imgName}, #{gallery_roiNum}, #{gallery_confidence}, #{gallery_class_name}, #{gallery_colors}::varchar[], #{case_idx}, #{gallery_x}, #{gallery_y}, #{gallery_width}, #{gallery_height}
+		)
+		returning gallery_idx;
+	</select>
+	
+	<insert id="insertTag_info" parameterType="java.util.Map">
+		<!-- INSERT INTO police.tag_info (
+			tag_class_name, tag_color, case_idx
+		) 
+		select #{gallery_class_name} as tag_class_name, #{tag_color} as tag_color, #{case_idx} as case_idx
+		where not exists (
+			select *
+			from police.tag_info
+			where tag_class_name = #{gallery_class_name} and tag_color = #{tag_color} and case_idx = #{case_idx}
+		) -->
+		
+		with upsert as (
+			update police.tag_info set tag_count = tag_count + 1  
+			where tag_class_name = #{gallery_class_name} and tag_color = #{tag_color} and case_idx = #{case_idx}
+			returning *   
+		) insert into police.tag_info (    
+			tag_class_name, tag_color, case_idx  
+		) select #{gallery_class_name}, #{tag_color}, #{case_idx}   
+		where not exists (    
+			select *    
+			from upsert
+		)
+		
+	</insert>
+	
+	<insert id="updateGps_info" parameterType="java.util.Map">
+		update police.gps_info
+		set gps_color = #{gps_color}, gps_status = #{gps_status}
+		where gps_imgname = #{gps_imgname};
+	</insert>
+	
+	<insert id="updateCase_roi_count" parameterType="java.util.Map">
+		update police.case_info
+		set case_roi_count = case_roi_count + #{case_roi_count}
+		where case_idx = #{case_idx}
+	</insert>
+		
+	<insert id="updateCase_info" parameterType="java.util.HashMap">
+		update police.case_info
+		set case_Taken = #{timeTaken}, case_progress = #{case_progress}
+		where case_idx = #{case_idx}
+	</insert>
+	
+	<insert id="updateCase_chk" parameterType="java.util.HashMap">	<!-- , case_chk_confidence = #{checkedConfidence} 로직 변경하면 추후에 들어감-->
+		update police.case_info
+		<if test="checkedYellow != null">
+			set case_chk_yellow = #{checkedYellow}
+		</if>
+		<if test="checkedGray != null">
+			set case_chk_gray = #{checkedGray}
+		</if>
+		<if test="checkedTrash != null">
+			set case_chk_trash = #{checkedTrash}
+		</if>
+		<if test="case_chk_confidence != null">
+			set case_chk_confidence = #{case_chk_confidence}
+		</if>
+		where case_idx = #{case_idx}
+	</insert>
+	
+	<!-- e-map 페이지 -->
+	<select id="selectCase_gps" parameterType="Integer" resultType="java.util.Map">
+		select g.*, c.case_content, c.case_time, c.case_taken, c.case_image_count, c.case_progress from police.gps_info as g
+		inner join police.case_info as c
+		on g.case_idx = c.case_idx
+		where g.case_idx = #{case_idx}
+		order by gps_idx asc;
+	</select>
+	
+	<select id="clickPage_num" parameterType="java.util.Map" resultType="java.util.Map">
+		select g.*, c.case_content, c.case_time, c.case_taken, c.case_image_count, c.case_progress from police.gps_info as g
+		inner join police.case_info as c
+		on g.case_idx = c.case_idx
+		where g.case_idx = #{case_idx}
+		order by gps_idx
+		OFFSET 15 * (#{page_number} - 1) limit 15;
+	</select>
+	
+	<!-- gallery 페이지 -->
+	<select id="selectTag_info" parameterType="java.util.Map" resultType="java.util.Map">
+		select * from police.tag_info
+		where case_idx = #{case_idx}
+		order by tag_class_name, tag_idx asc
+	</select>
+	
+	<select id="selectCase_gallery" parameterType="java.util.Map" resultType="java.util.Map">
+		select g.*, c.case_time, c.case_image_count, c.case_progress, c.case_roi_count from police.gallery_info as g
+		inner join police.case_info as c
+		on g.case_idx = c.case_idx
+		where g.case_idx = #{case_idx}
+		order by gallery_idx asc;
+	</select>
+	
+	<!-- <select id="selectCase_gallery" parameterType="java.util.Map" resultType="java.util.Map">
+		select g.*, c.case_time, c.case_image_count, c.case_progress, c.case_roi_count from police.gallery_info as g
+		inner join police.case_info as c
+		on g.case_idx = c.case_idx
+		where g.case_idx = #{case_idx}
+		order by gallery_idx
+		OFFSET 28 * (#{page_number} - 1) limit 28;
+	</select> -->
+	
+	<select id="selectRoi_image" parameterType="java.util.Map" resultType="java.util.Map">
+		select gallery_imgname, gallery_x, gallery_y, gallery_width, gallery_height
+		from police.gallery_info
+		where case_idx = #{case_idx} and gallery_roinum = #{gallery_roinum}
+	</select>
+	
+	<select id="selectChkImage" parameterType="java.util.Map" resultType="java.util.Map">
+		<if test="chk_tag.size != 0">
+			select * from police.gallery_info
+			where case_idx = #{case_idx}
+			and (
+			    <foreach collection="chk_tag" item="item" separator="or">
+			        (gallery_class_name = split_part(#{item}, '_', 1) and split_part(#{item}, '_', 2) || ' ' || split_part(#{item}, '_', 3) = any(gallery_colors))
+			    </foreach>
+		    )
+		    <choose>
+		    <when test="favorites.size != 0">
+		    	and(
+				    <foreach collection="favorites" item="item" separator="or">
+				        (gallery_favorites = #{item})
+				    </foreach>
+			    )
+		    </when>
+		    <otherwise>
+		    	and(
+				    gallery_favorites != 'T'
+			    )
+		    </otherwise>
+		    </choose>
+		    <if test="confidenceValue != null">
+		    	and (gallery_confidence >= #{confidenceValue} )
+		    </if>
+		    <choose>
+		    <when test="confidence != null">
+				order by gallery_confidence desc
+		    </when>
+		    <otherwise>
+				order by gallery_idx
+		    </otherwise>
+		    </choose>
+			<!-- OFFSET 28 * (#{page_number} - 1) limit 28 -->;
+		</if>
+	</select>
+	<insert id="updateColorChecked" parameterType="java.util.Map">
+		update police.tag_info
+		set tag_color_checked = #{checked}
+		where tag_class_name = split_part(#{tag_id}, '_', 1) and tag_color = split_part(#{tag_id}, '_', 2)
+	</insert>
+</mapper>
