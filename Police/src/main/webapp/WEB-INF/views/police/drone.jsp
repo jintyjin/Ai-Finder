@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="./resources/css/bootstrap.min.css" />
 <link rel="stylesheet" href="./resources/css/bootstrap-theme.min.css" />
 <script src="./resources/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="./resources/js/translate/translate.js"></script> 
 <style>
 html, body {
 	width:100%;
@@ -55,7 +56,7 @@ $(document).ready(function () {
 					}
 					drawMapLine(position_array);
 				} else {
-					alert('맵 정보를 불러올 수 없습니다.');
+					alert(getTranslate('unableToLoadMapUnformation'));
 					self.close();
 				}
 			}, error: function(errorThrown) {
@@ -160,7 +161,7 @@ $(document).ready(function () {
 		}
 	    
 	} else {
-		alert('맵 정보를 불러올 수 없습니다.');
+		alert(getTranslate('unableToLoadMapUnformation'));
 		self.close();
 	}
 }); 

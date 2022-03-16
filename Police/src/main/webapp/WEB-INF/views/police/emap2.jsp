@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,6 +15,7 @@
 <script src="./resources/js/stomp.min.js"></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/exif-js"></script> -->
 <script type="text/javascript" src="./resources/func/exif.js"></script>
+<script type="text/javascript" src="./resources/js/translate/translate.js"></script> 
 <style>
 html{
 	width:100%;
@@ -969,15 +971,18 @@ $(document).ready(function () {
 	}
 	
 	if (get('timeRemaining') == null) {
-		setTimeRemaining('0시간 0분 0초');
+		setTimeRemaining('00시간 00분 00초');
 	}
-	
+
 	if (get('timeTaken') == null) {
-		setTimeTaken('0시간 0분 0초');
+		setTimeTaken('00시간 00분 00초');
 	}
 
 	if (get('timeTaken') != null) {
-		$('#timeTaken').text(get('timeTaken'));
+		$('#timeTaken').text(get('timeTaken')
+				.replaceAll("시간 ", getTranslate('hours'))
+				.replaceAll("분 ", getTranslate('minute'))
+				.replaceAll("초", getTranslate('second')));
 	}
 	
 	if (get('perTime') == null) {
@@ -987,7 +992,7 @@ $(document).ready(function () {
 	//$('<a href="/police/imageDownload?caseNum=' + JSON.parse(get('obj'))[0].image0.image.substring(JSON.parse(get('obj'))[0].image0.image.lastIndexOf('case'), JSON.parse(get('obj'))[0].image0.image.lastIndexOf('/')) + '"><input type="button" value="다운로드" style="width:100%; height:100%; border:none; border-radius:3px; cursor:pointer; padding:0; margin:0; color:white; background-color:#1E90FF;"/></a>').insertAfter('#tmpDownload');
 	
 	if (get('perTime') != null && (get('perTime') == '100' || get('perTime') == '0')) {
-		$('#btn').val('분석 시작');
+		$('#btn').val(getTranslate('startAnalysis'));
 		//$('#btn').attr('disabled', false);
 		$('#btn').css('opacity', '1');
 	}
@@ -1002,13 +1007,13 @@ $(document).ready(function () {
 	
 	if (get('perTime') != null && get('perTime') != '100' && get('perTime') != '0') {
 		if (!isTimer) {
-			$('#btn').val('분석 취소');
+			$('#btn').val(getTranslate('cancelAnalysis'));
 			//$('#btn').attr('disabled', true);
 			//$('#btn').css('opacity', '0.5');
 			$('#downloadBtn').attr('disabled', true);
 			//$('#downloadBtn').css('opacity', '0.5');
 		} else {
-			$('#btn').val('분석 시작');
+			$('#btn').val(getTranslate('startAnalysis'));
 			//$('#btn').attr('disabled', false);
 			$('#btn').css('opacity', '1');
 			$('#downloadBtn').attr('disabled', false);
@@ -1028,7 +1033,7 @@ $(document).ready(function () {
 			$('#title', top.document).text(get('New'));
 		}
 	} else {
-		var caseNum = 'NEW(제목없음)';
+		var caseNum = getTranslate('newNoTitle');
 		//$('#title', top.document).text(caseNum);
 	}
 	
@@ -1324,7 +1329,7 @@ $(document).ready(function () {
 		stompClient.subscribe('/endAnalyse', function (number) {
 			if (JSON.parse(get('userdata')).login_id == JSON.parse(number.body).login_id && '${case_idx}' == '') {
 				if (parseInt(get('count')) == (parseInt(JSON.parse(number.body).num) + 1)) {
-					$('#btn').val('분석 시작');
+					$('#btn').val(getTranslate('startAnalysis'));
 					//$('#btn').attr('disabled', false);
 					$('#btn').css('opacity', '1');
 					$('#downloadBtn').attr('disabled', false);
@@ -1355,13 +1360,13 @@ $(document).ready(function () {
 		});
 		stompClient.subscribe('/imageDownload', function (number) {
 			if (JSON.parse(get('userdata')).login_id == JSON.parse(number.body).login_id && JSON.parse(number.body).isNew == '${case_idx}') {
-				$('#downloadBtn').text('다운로드중..\n ' + JSON.parse(number.body).per);
+				$('#downloadBtn').text(getTranslate('downloading') + '..\n ' + JSON.parse(number.body).per);
 				$('#downloadBtn').html($('#downloadBtn').html().replace(/\n/g,'<br/>'));
 			}
 		});
 		stompClient.subscribe('/stitchingUpload', function (number) {
 			if (JSON.parse(get('userdata')).login_id == JSON.parse(number.body).stitching_id && JSON.parse(number.body).isNew == '${case_idx}') {
-				$('#stitchingUploadBtn button').text('스티칭 업로드');
+				$('#stitchingUploadBtn button').text(getTranslate('stitchingUpload'));
 				$('#stitchingUploadBtn').attr('disabled', false);
 				$('#stitchingUploadBtn').css('opacity', '1');
 				if (/(MSIE|Trident)/.test(navigator.userAgent)) { 
@@ -1432,10 +1437,16 @@ $(document).ready(function () {
 				setWidth('100');
 				$('#perTime').text(parseInt(get('perTime')) + '%');
 				$('#perTime').width(parseInt(get('perTime')) + '%');
-				setTimeRemaining('0시간 0분 0초');
-				$('#timeTaken').text(get('timeTaken'));
-				$('#timeRemaining').text(get('timeRemaining'));
-				$('#btn').val('분석 시작');	
+				setTimeRemaining('00시간 00분 00초');
+				$('#timeTaken').text(get('timeTaken')
+						.replaceAll("시간 ", getTranslate('hours'))
+						.replaceAll("분 ", getTranslate('minute'))
+						.replaceAll("초", getTranslate('second')));
+				$('#timeRemaining').text(get('timeRemaining')
+						.replaceAll("시간 ", getTranslate('hours'))
+						.replaceAll("분 ", getTranslate('minute'))
+						.replaceAll("초", getTranslate('second')));
+				$('#btn').val(getTranslate('startAnalysis'));	
 				//$('#btn').attr('disabled', false);
 				$('#btn').css('opacity', '1');
 				
@@ -1662,7 +1673,10 @@ $(document).ready(function () {
 	}
 });
 $('#timeTaken').ready(function() {
-	$('#timeTaken').text(get('timeTaken'));
+	$('#timeTaken').text(get('timeTaken')
+			.replaceAll("시간 ", getTranslate('hours'))
+			.replaceAll("분 ", getTranslate('minute'))
+			.replaceAll("초", getTranslate('second')));
 });
 $(window).resize(function() {
 	if (get('obj') != null) {
@@ -1847,7 +1861,10 @@ function clickId2(imageNum) {
 	});
 }
 $('#timeRemaining').ready(function() {
-	$('#timeRemaining').text(get('timeRemaining'));
+	$('#timeRemaining').text(get('timeRemaining')
+			.replaceAll("시간 ", getTranslate('hours'))
+			.replaceAll("분 ", getTranslate('minute'))
+			.replaceAll("초", getTranslate('second')));
 });
 $('#perTime').ready(function() {
 	$(this).text(get('perTime'));
@@ -1905,7 +1922,7 @@ function changeMap(imgNum) {
 	} */
 }
 function checkAnalyze() {
-	if ($('#btn').val() != '분석 취소') {
+	if ($('#btn').val() != getTranslate('cancelAnalysis')) {
 		$('#caseTitle').val('');
 		$('.modal_hide2').attr('class','modal2');
 	} else {
@@ -1918,9 +1935,9 @@ function startAnalyze() {
 	$('#submitBtn').click();
 }
 function removeAll () {
-	if ($('#btn').val() != '분석 취소') {
+	if ($('#btn').val() != getTranslate('cancelAnalysis')) {
 		// 텍스트 비움
-		if(confirm('분석을 시작하시겠습니까?')) {
+		if(confirm(getTranslate('questionStartAnalysis'))) {
 			var frm = document.analyzeForm;
 			var path = document.getElementById('output_path');
 			var login_id = document.getElementById('login_id');
@@ -1935,11 +1952,11 @@ function removeAll () {
 					}
 				}
 				if (!isJPG) {
-					alert('JPG 이미지 파일이 아닌 파일이 존재합니다.');
+					alert(getTranslate('notJpg'));
 					return false;
 				} else {
 					frm.action = '/police/upload';
-					$('#btn').val('분석 취소');
+					$('#btn').val(getTranslate('cancelAnalysis'));
 					$('#stitching').attr('disabled', true);
 					$('#stitching').css('opacity', '0.5');
 					$('#downloadBtn').attr('disabled', true);
@@ -1949,8 +1966,8 @@ function removeAll () {
 					analyze_content.value = $('#caseTitle').val();
 
 					$('#fileCount').text('0');
-					$('#timeRemaining').text('0시간 0분 0초');
-					$('#timeTaken').text('0시간 0분 0초');
+					$('#timeRemaining').text('00' + getTranslate('hours') + '00' + getTranslate('minute') + '00' + getTranslate('second'));
+					$('#timeTaken').text('00' + getTranslate('hours') + '00' + getTranslate('minute') + '00' + getTranslate('second'));
 					$('#perTime').text('0%');
 					$('#perTime').width('0%');
 					$('#imgName').text('');
@@ -1992,14 +2009,14 @@ function removeAll () {
 					return true;
 				}
 			} else {
-				alert('업로드 할 폴더를 선택해주세요');
+				alert(getTranslate('selectFolder'));
 				return false;
 			}
 		} else {
 			return false;
 		}	
 	} else {
-		if (confirm('분석이 진행중입니다. 취소하시겠습니까?')) {
+		if (confirm(getTranslate('questionCancelAnalysis'))) {
 			isTimer = false;
 			var frm = document.analyzeForm;
 			var login_id = document.getElementById('login_id');
@@ -2007,7 +2024,7 @@ function removeAll () {
 			//analyzeForm.action = '/police/deleteAsync';
 			frm.action = '/police/deleteAsync';
 
-			$('#btn').val('분석 시작');
+			$('#btn').val(getTranslate('startAnalysis'));
 			$('#btn').css('opacity', '1');
 			//$('#downloadBtn').text('다운로드');
 			//$('#downloadBtn').attr('disabled', false);
@@ -2042,7 +2059,7 @@ function timer(time) {
 			sec = parseInt(time%3600%60);
 			
 			/* document.getElementById('timeRemaining').innerHTML = hour + '시간 ' + min + '분 ' + sec + '초'; */
-			$('#timeRemaining').text(hour + '시간 ' + min + '분 ' + sec + '초');
+			$('#timeRemaining').text(hour + getTranslate('hours') + min + getTranslate('minute') + sec + getTranslate('second'));
 			setTimeRemaining(hour + '시간 ' + min + '분 ' + sec + '초');
 			
 			if (!isTimer) {
@@ -2069,7 +2086,7 @@ function timer2(endTime) {
 			sec = parseInt(time%3600%60);
 			
 			/* document.getElementById('timeRemaining').innerHTML = hour + '시간 ' + min + '분 ' + sec + '초'; */
-			$('#timeTaken').text(hour + '시간 ' + min + '분 ' + sec + '초');
+			$('#timeTaken').text(hour + getTranslate('hours') + min + getTranslate('minute') + sec + getTranslate('second'));
 			setTimeTaken(hour + '시간 ' + min + '분 ' + sec + '초');
 
 			if (!isTimer) {
@@ -2088,12 +2105,12 @@ function timer2(endTime) {
 $(window).on("beforeunload", function() {
 	if (get('isShow')) {
 	} else {
-		return "현재 이미지 분석중입니다. 이동 시 처음부터 다시 해야합니다. 그래도 이동하시겠습니까?";
+		return getTranslate('questionAnalyzingMovePage');
 	}
 });
 function imageDownload() {
 	if (('${case_idx}' != null && '${case_idx}' != '') || $('#perTime').text() == '100%') {
-		$('#downloadBtn').text('다운로드중..\n 0%');
+		$('#downloadBtn').text(getTranslate('downloading') + '..\n 0%');
 		$('#downloadBtn').html($('#downloadBtn').html().replace(/\n/g,'<br/>'));
 		$('#downloadBtn').attr('disabled', true);
 		$('#downloadBtn').css('opacity', '0.5');
@@ -2115,7 +2132,7 @@ function imageDownload() {
 			contentType : "application/json; charset=UTF-8",         
 			data : jsonData,          		   
 		    success: function(data) {
-				$('#downloadBtn').text('다운로드');
+				$('#downloadBtn').text(getTranslate('download'));
 				$('#downloadBtn').attr('disabled', false);
 				$('#downloadBtn').css('opacity', '1');
 				location.href = data.address;
@@ -2127,7 +2144,7 @@ function imageDownload() {
 			}
 		});
 	} else {
-		alert('분석이 완료되지 않았습니다. 분석 완료 후 다운로드가 가능합니다.');
+		alert(getTranslate('analyzingDownload'));
 	} 
 }
 function stitching() {
@@ -2147,7 +2164,7 @@ function stitchingUpload() {
 		var stitching_id = document.getElementById('stitching_id');
 
 		if (JSON.stringify(file.files.length) > 0) {
-			$('#stitchingUploadBtn button').text('스티칭중..');
+			$('#stitchingUploadBtn button').text(getTranslate("stitchinging") + '..');
 			$('#stitchingUploadBtn').attr('disabled', true);
 			$('#stitchingUploadBtn').css('opacity', '0.5');
 			caseNum.value = 'case' + '${case_idx}'
@@ -2156,10 +2173,10 @@ function stitchingUpload() {
 			isNew.value = '${case_idx}'; 
 			frm.submit();
 		} else {
-			alert('스티칭 이미지를 선택해야 합니다.');
+			alert(getTranslate('selectStitchingImage'));
 		}
 	} else {
-		alert('이미지 분석을 완료하여야 합니다.');
+		alert(getTranslate('completeAnalyzingStitching'));
 	}
 }
 function isImageLoad(url) {
@@ -3063,11 +3080,11 @@ function goPreviousPage(case_idx, total_count, total_page) {
 <tr height="7%"><td width="100%">
 <table style="width:100%; height:100%; border:none; padding:0; margin:0; border-collapse: separate; border-spacing:4px;">
 <tr height="100%"><td width="30%">
-	<p class="navbar-text" style="margin:15px;">분석 리스트
+	<p class="navbar-text" style="margin:15px;"><spring:message code="map.analysisList" />
 	<p class="navbar-text navbar-right" style="margin:15px;" id="fileCount">
 </td>
 <td width="*">
-	<p class="navbar-text" style="margin:15px;">지도 뷰
+	<p class="navbar-text" style="margin:15px;"><spring:message code="map.mapView" />
 	<!-- <p class="navbar-text navbar-right" style="margin:15px;">발견 경고음 활성화
 	<p class="navbar-text navbar-right" style="margin:15px 0px 15px 15px;"><input type="checkbox" id="inlineCheckbox1" value="option1" /> -->
 	<!-- <p class="navbar-text navbar-right" style="margin:15px;">드론 이동 경로 활성화
@@ -3101,9 +3118,9 @@ function goPreviousPage(case_idx, total_count, total_page) {
 				   			<span aria-hidden="true">&laquo;</span>
 						</a>
 					</li>
-					<li class="page-item" id="previous_one"><a class="page-link" href="#">이전</a></li>
+					<li class="page-item" id="previous_one"><a class="page-link" href="#"><spring:message code="common.previous" /></a></li>
 					<li class="page-item page active" id="page1"><a href="#">1</a></li>
-					<li class="page-item" id="next_one"><a class="page-link" href="#">다음</a></li>
+					<li class="page-item" id="next_one"><a class="page-link" href="#"><spring:message code="common.next" /></a></li>
 					<li id="next" class="disabled">
 						<a href="#" aria-label="Next">
 							<span aria-hidden="true">&raquo;</span>
@@ -3133,12 +3150,12 @@ function goPreviousPage(case_idx, total_count, total_page) {
 		<tr height="10%"><td style="background-color:#404040;">
 			<table style="width:100%; height:100%; border:none; padding:0; margin:0;">
 			<tr>
-			<td id="input_text" width="*" style="background-color:#404040; padding:8px;">입력 이미지 폴더</td>
+			<td id="input_text" width="*" style="background-color:#404040; padding:8px;"><spring:message code="map.inputImageFolder" /></td>
 			<td style="background-color:#404040; padding:8px;">
 				<div class="container" id="upload_text" style="padding:0; margin:0; width:100%; height:100%; ">		<!-- display:none; -->
-				<button id="labelBtn" onclick="labelClick();">업로드 폴더를 선택해주세요.</button>
+				<button id="labelBtn" onclick="labelClick();"><spring:message code="map.selectUploadFolder" /></button>
 				<input disabled="disabled" style="position:absolute; clip:rect(0,0,0,0); border:0; width:0px; height:0px; padding:0; margin:-1px; overflow: hidden; ">
-				<label id="form_label" for="output_path" style="margin:0; display:none;">업로드 폴더를 선택해주세요.</label>
+				<label id="form_label" for="output_path" style="margin:0; display:none;"><spring:message code="map.selectUploadFolder" /></label>
 				<form action="/police/upload" name="analyzeForm" method="post" enctype="multipart/form-data" id="formUploadDir" onsubmit="return removeAll();" target="iframe1">
 				<input type=hidden id="login_id" name="login_id" value="" />
 				<input type=hidden id="analyze_content" name="analyze_content" value="" />
@@ -3146,19 +3163,19 @@ function goPreviousPage(case_idx, total_count, total_page) {
 				</div>
 			</td>
 			<td width="10%" style="background-color:#404040; padding:8px;">
-				<input id="btn" type="button" style="width:100%; height:100%; border:none; border-radius:3px; cursor:pointer; padding:0; margin:0; color:white; background-color:#1E90FF;" value="분석 시작" onclick="checkAnalyze();" />	 <!-- display:none; -->
+				<input id="btn" type="button" style="width:100%; height:100%; border:none; border-radius:3px; cursor:pointer; padding:0; margin:0; color:white; background-color:#1E90FF;" value='<spring:message code="map.startAnalysis" />' onclick="checkAnalyze();" />	 <!-- display:none; -->
 				<input id="submitBtn" type="submit" style="width:100%; height:100%; border:none; border-radius:3px; cursor:pointer; padding:0; margin:0; color:white; background-color:#1E90FF; display:none;" />		 <!-- display:none; -->
 				</form>
 			</td>
 			<td width="10%" style="background-color:#404040; padding:8px;">
-				<a id="download"><button id="downloadBtn" style="width:100%; height:100%; border:none; border-radius:3px; cursor:pointer; padding:0; margin:0; color:white; background-color:#1E90FF;" onclick="imageDownload();">다운로드</button></a>
+				<a id="download"><button id="downloadBtn" style="width:100%; height:100%; border:none; border-radius:3px; cursor:pointer; padding:0; margin:0; color:white; background-color:#1E90FF;" onclick="imageDownload();"><spring:message code="common.download" /></button></a>
 			</td>
 			<td width="10%" style="background-color:#404040; padding:8px;">
-				<a id="stitching" onclick="stitching();"><button id="stitchingBtn" style="width:100%; height:100%; border:none; border-radius:3px; cursor:pointer; padding:0; margin:0; color:white; background-color:#1E90FF;">스티칭</button></a>
+				<a id="stitching" onclick="stitching();"><button id="stitchingBtn" style="width:100%; height:100%; border:none; border-radius:3px; cursor:pointer; padding:0; margin:0; color:white; background-color:#1E90FF;"><spring:message code="map.stitching" /></button></a>
 			</td>
 			<td width="10%" style="background-color:#404040; padding:8px;">
 				<input disabled="disabled" style="position:absolute; clip:rect(0,0,0,0); border: 0;width:1px; height:1px; padding:0; margin:-1px; overflow: hidden; ">
-				<a id="stitchingUploadBtn"><button style="width:100%; height:100%; border:none; border-radius:3px; cursor:pointer; padding:0; margin:0; color:white; background-color:#1E90FF;" onclick="clickUploadBtn();">스티칭 업로드</button></a>
+				<a id="stitchingUploadBtn"><button style="width:100%; height:100%; border:none; border-radius:3px; cursor:pointer; padding:0; margin:0; color:white; background-color:#1E90FF;" onclick="clickUploadBtn();"><spring:message code="map.stitchingUpload" /></button></a>
 				<form action="/police/stitchingUpload" method="post" enctype="multipart/form-data" id="stitchingUpload" target="iframe1">
 					<input type=hidden id="caseNum" name="caseNum" value="" />
 					<input type=hidden id="stitching_id" name="stitching_id" value="" />
@@ -3180,10 +3197,10 @@ function goPreviousPage(case_idx, total_count, total_page) {
 			<table id="time_text" style="width:100%; height:100%; border:none; margin:0; padding:0;">
 				<tr>
 				<td style="background-color:#404040; padding:0px 8px;">
-					<p class="navbar-text" style="margin:0px 8px 0px 0px;">가동시간 :
+					<p class="navbar-text" style="margin:0px 8px 0px 0px;"><spring:message code="map.elapsedTime" /> :
 					<p class="navbar-text" style="margin:0;" id="timeTaken">
 					<p class="navbar-text navbar-right" style="margin:0;" id="timeRemaining">
-					<p class="navbar-text navbar-right" style="margin:0px 8px 0px 0px;">남은시간 :
+					<p class="navbar-text navbar-right" style="margin:0px 8px 0px 0px;"><spring:message code="map.timeRemaining" /> :
 				</td></tr>
 				<tr>
 				<td style="background-color:#404040; padding:8px;">
@@ -3211,17 +3228,17 @@ function goPreviousPage(case_idx, total_count, total_page) {
 			</button> 
 		</div>
 		<div class="titleDiv3">
-			수색 내용
+			<spring:message code="common.searchContent" />
 		</div>
 		<div class="contentDiv2">
 			<input type="text" id="caseTitle" />
 		</div>
 		<div class="btnDiv2">
 			<button class="button_check2 checkBtn2" onclick="startAnalyze();">
-				확인
+				<spring:message code="common.confirm" />
 			</button>
 			<button class="button_delete2 closeBtn5">
-				취소
+				<spring:message code="common.cancel" />
 			</button>
 		</div>
 	</div>

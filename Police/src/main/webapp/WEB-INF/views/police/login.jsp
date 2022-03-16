@@ -7,6 +7,7 @@
 <title>AI-Finder</title>
 <script src="./resources/js/jquery-3.3.1.min.js"></script>
 <script src="./resources/js/js.cookie.js"></script>
+<script type="text/javascript" src="./resources/js/translate/translate.js"></script> 
 <style>
 html, body {
 	width:100%;
@@ -313,13 +314,13 @@ $(document).ready(function () {
 	});
 	$('#btn').click(function () {
 		if($('#userid').val() == '') {
-			alert("아이디를 입력하세요.");
+			alert(getTranslate('enterId'));
 			$("#userid").focus();
 			return;
 		}
 
 		if($('#userpw').val() == '') {
-			alert("비밀번호를 입력하세요.");
+			alert(getTranslate('enterPassword'));
 			$("#userpw").focus();
 			return;
 		}
@@ -339,15 +340,15 @@ $(document).ready(function () {
 			data : jsonData,
 			success : function(data) {
 				if (data.json == null) {
-					alert("ID 또는 비밀번호가 틀립니다.");
+					alert(getTranslate('wrongIDorPassword'));
 					$("#userid").focus();
 				} else if (data.json.return == "incorrect") {
-					alert("가입되어 있지 않은 회원입니다.");
+					alert(getTranslate('notRegisteredMember'));
 					$("#userid").focus();
 				} else if (data.json.return == "null") {
-					alert("새로운 비밀번호를 지정해주십시오.");
+					alert(getTranslate('specifyNewPassword'));
 				} else if (data.json.return == "success") {
-					alert("환영합니다. " + data.login_id + " 님");
+					alert(getTranslate('welcome') + data.user_id + getTranslate('sir'));
 					setUserLogin(data);
 					$(window.parent.location).attr('href', './main.htm');
 					/* popupMenu('/police/gallery.htm');
@@ -355,7 +356,7 @@ $(document).ready(function () {
 				}
 			},
 			error : function(request, status, error) {
-				alert('에러');
+				alert(getTranslate('error'));
 				alert('jsonData = ' + jsonData);
 				alert('jsonUrl = ' + jsonUrl);
 			}

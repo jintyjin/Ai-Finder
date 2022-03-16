@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=EUC-KR"
     pageEncoding="EUC-KR"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,6 +21,7 @@
 <link rel="stylesheet" href="//t1.daumcdn.net/kakaomapweb/map/202103251400738/app_B.css">
 <link rel="stylesheet" href="./resources/css/app_C.css">
 <link rel="stylesheet" href="//t1.daumcdn.net/kakaomapweb/map/202103251400738/app_D.css">
+<script type="text/javascript" src="./resources/js/translate/translate.js"></script> 
 <style>
 html, body {
 	width:100%;
@@ -122,7 +124,7 @@ input {
 #data_btn {
 	border-radius:3px;
 	background-color:#c8c8c8;
-	padding:2px 5px 2px 5px;
+	padding:2px 2px 2px 2px;
 }
 #data_btn:hover {
 	color:#1c97ea;
@@ -669,7 +671,7 @@ $(document).ready(function () {
 				    	});
 
 				    	kakao.maps.event.addListener(startMarker, 'rightclick', function(mouseEvent) {
-				    		var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + k + "'" + ');">열기</div><div class="rightDiv" onclick="openGallery(' + "'" + k + "'" + ');">갤러리</div><div class="rightDiv" onclick="openStitching(' + "'" + k + "'" + ');">스티칭 뷰</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + k + "'" + ');">드론 경로</div></div>'
+				    		var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + k + "'" + ');">' + getTranslate('open') + '</div><div class="rightDiv" onclick="openGallery(' + "'" + k + "'" + ');">' + getTranslate('gallery') + '</div><div class="rightDiv" onclick="openStitching(' + "'" + k + "'" + ');">' + getTranslate('stitchingView') + '</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + k + "'" + ');">' + getTranslate('droneRoute') + '</div></div>'
 				    		customOverlay.setContent(content);
 				    		customOverlay.setPosition(linePath[0]); 
 				    		customOverlay.setMap(map);
@@ -719,7 +721,8 @@ $(document).ready(function () {
 					    	});
 
 					    	kakao.maps.event.addListener(endMarker, 'rightclick', function() {
-					    		var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + k + "'" + ');">열기</div><div class="rightDiv" onclick="openGallery(' + "'" + k + "'" + ');">갤러리</div><div class="rightDiv" onclick="openStitching(' + "'" + k + "'" + ');">스티칭 뷰</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + k + "'" + ');">드론 경로</div></div>'
+					    		var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + k + "'" + ');">' + getTranslate('open') + '</div><div class="rightDiv" onclick="openGallery(' + "'" + k + "'" + ');">' + getTranslate('gallery') + '</div><div class="rightDiv" onclick="openStitching(' + "'" + k + "'" + ');">' + getTranslate('stitchingView') + '</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + k + "'" + ');">' + getTranslate('droneRoute') + '</div></div>'
+					    		//var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + k + "'" + ');">열기</div><div class="rightDiv" onclick="openGallery(' + "'" + k + "'" + ');">갤러리</div><div class="rightDiv" onclick="openStitching(' + "'" + k + "'" + ');">스티칭 뷰</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + k + "'" + ');">드론 경로</div></div>'
 					    		customOverlay.setContent(content);
 					    		customOverlay.setPosition(linePath[linePath.length - 1]); 
 					    		customOverlay.setMap(map);
@@ -977,7 +980,8 @@ $(document).ready(function () {
 					    	});
 
 					    	kakao.maps.event.addListener(endMarker, 'rightclick', function() {
-					    		var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + case_num + "'" + ');">열기</div><div class="rightDiv" onclick="openGallery(' + "'" + case_num + "'" + ');">갤러리</div><div class="rightDiv" onclick="openStitching(' + "'" + case_num + "'" + ');">스티칭 뷰</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + case_num + "'" + ');">드론 경로</div></div>'
+					    		var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + k + "'" + ');">' + getTranslate('open') + '</div><div class="rightDiv" onclick="openGallery(' + "'" + k + "'" + ');">' + getTranslate('gallery') + '</div><div class="rightDiv" onclick="openStitching(' + "'" + k + "'" + ');">' + getTranslate('stitchingView') + '</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + k + "'" + ');">' + getTranslate('droneRoute') + '</div></div>'
+					    		//var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + case_num + "'" + ');">열기</div><div class="rightDiv" onclick="openGallery(' + "'" + case_num + "'" + ');">갤러리</div><div class="rightDiv" onclick="openStitching(' + "'" + case_num + "'" + ');">스티칭 뷰</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + case_num + "'" + ');">드론 경로</div></div>'
 					    		customOverlay.setContent(content);
 					    		customOverlay.setPosition(locPosition); 
 					    		customOverlay.setMap(map);
@@ -1001,7 +1005,8 @@ $(document).ready(function () {
 						} else {
 							var endMarker = eval('jsonImageReal.' + case_num + '.endMarker');
 					    	kakao.maps.event.addListener(endMarker, 'rightclick', function() {
-					    		var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + case_num + "'" + ');">열기</div><div class="rightDiv" onclick="openGallery(' + "'" + case_num + "'" + ');">갤러리</div><div class="rightDiv" onclick="openStitching(' + "'" + case_num + "'" + ');">스티칭 뷰</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + case_num + "'" + ');">드론 경로</div></div>'
+					    		var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + k + "'" + ');">' + getTranslate('open') + '</div><div class="rightDiv" onclick="openGallery(' + "'" + k + "'" + ');">' + getTranslate('gallery') + '</div><div class="rightDiv" onclick="openStitching(' + "'" + k + "'" + ');">' + getTranslate('stitchingView') + '</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + k + "'" + ');">' + getTranslate('droneRoute') + '</div></div>'
+					    		//var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + case_num + "'" + ');">열기</div><div class="rightDiv" onclick="openGallery(' + "'" + case_num + "'" + ');">갤러리</div><div class="rightDiv" onclick="openStitching(' + "'" + case_num + "'" + ');">스티칭 뷰</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + case_num + "'" + ');">드론 경로</div></div>'
 					    		customOverlay.setContent(content);
 					    		customOverlay.setPosition(locPosition); 
 					    		customOverlay.setMap(map);
@@ -1073,7 +1078,8 @@ $(document).ready(function () {
 				    	});
 
 				    	kakao.maps.event.addListener(startMarker, 'rightclick', function() {
-				    		var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + case_num + "'" + ');">열기</div><div class="rightDiv" onclick="openGallery(' + "'" + case_num + "'" + ');">갤러리</div><div class="rightDiv" onclick="openStitching(' + "'" + case_num + "'" + ');">스티칭 뷰</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + case_num + "'" + ');">드론 경로</div></div>'
+				    		var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + k + "'" + ');">' + getTranslate('open') + '</div><div class="rightDiv" onclick="openGallery(' + "'" + k + "'" + ');">' + getTranslate('gallery') + '</div><div class="rightDiv" onclick="openStitching(' + "'" + k + "'" + ');">' + getTranslate('stitchingView') + '</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + k + "'" + ');">' + getTranslate('droneRoute') + '</div></div>'
+				    		//var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + case_num + "'" + ');">열기</div><div class="rightDiv" onclick="openGallery(' + "'" + case_num + "'" + ');">갤러리</div><div class="rightDiv" onclick="openStitching(' + "'" + case_num + "'" + ');">스티칭 뷰</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + case_num + "'" + ');">드론 경로</div></div>'
 				    		customOverlay.setContent(content);
 				    		customOverlay.setPosition(locPosition); 
 				    		customOverlay.setMap(map);
@@ -1559,7 +1565,8 @@ function selectDroneData() {
 				    	});
 
 				    	kakao.maps.event.addListener(startMarker, 'rightclick', function() {
-				    		var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + k + "'" + ');">열기</div><div class="rightDiv" onclick="openGallery(' + "'" + k + "'" + ');">갤러리</div><div class="rightDiv" onclick="openStitching(' + "'" + k + "'" + ');">스티칭 뷰</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + k + "'" + ');">드론 경로</div></div>'
+				    		var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + k + "'" + ');">' + getTranslate('open') + '</div><div class="rightDiv" onclick="openGallery(' + "'" + k + "'" + ');">' + getTranslate('gallery') + '</div><div class="rightDiv" onclick="openStitching(' + "'" + k + "'" + ');">' + getTranslate('stitchingView') + '</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + k + "'" + ');">' + getTranslate('droneRoute') + '</div></div>'
+				    		//var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + k + "'" + ');">열기</div><div class="rightDiv" onclick="openGallery(' + "'" + k + "'" + ');">갤러리</div><div class="rightDiv" onclick="openStitching(' + "'" + k + "'" + ');">스티칭 뷰</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + k + "'" + ');">드론 경로</div></div>'
 				    		//'<div data-id="ViewContext" class="Context" style="cursor: default;"><div class="contextWrap"><a data-id="here" href="#" class="context_here"><span class="text">여기 주소 보기</span></a><a data-id="newplace" href="#" class="context_new"><span class="text">신규 장소 등록</span></a><a data-id="strange" href="#" class="strange"><span class="text">여기 정보 수정</span></a><a data-id="favorite" class="fav" href="#"><span class="text">즐겨찾기 추가</span></a><a data-id="w3w" class="fav" href="#"><span class="text">W3W</span></a><span class="separator"></span><a data-id="origin" href="#"><span class="origin"></span><span class="text">출발지 지정</span></a><a data-id="via" href="#"><span class="via"></span><span class="text">경유지 지정</span></a><a data-id="destination" href="#"><span class="destination"></span><span class="text">도착지 지정</span></a></div></div>'
 				    		customOverlay.setContent(content);
 				    		customOverlay.setPosition(linePath[0]); 
@@ -1612,7 +1619,8 @@ function selectDroneData() {
 					    	});
 
 					    	kakao.maps.event.addListener(endMarker, 'rightclick', function() {
-					    		var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + k + "'" + ');">열기</div><div class="rightDiv" onclick="openGallery(' + "'" + k + "'" + ');">갤러리</div><div class="rightDiv" onclick="openStitching(' + "'" + k + "'" + ');">스티칭 뷰</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + k + "'" + ');">드론 경로</div></div>'
+					    		var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + k + "'" + ');">' + getTranslate('open') + '</div><div class="rightDiv" onclick="openGallery(' + "'" + k + "'" + ');">' + getTranslate('gallery') + '</div><div class="rightDiv" onclick="openStitching(' + "'" + k + "'" + ');">' + getTranslate('stitchingView') + '</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + k + "'" + ');">' + getTranslate('droneRoute') + '</div></div>'
+					    		//var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + k + "'" + ');">열기</div><div class="rightDiv" onclick="openGallery(' + "'" + k + "'" + ');">갤러리</div><div class="rightDiv" onclick="openStitching(' + "'" + k + "'" + ');">스티칭 뷰</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + k + "'" + ');">드론 경로</div></div>'
 					    		customOverlay.setContent(content);
 					    		customOverlay.setPosition(linePath[linePath.length - 1]); 
 					    		customOverlay.setMap(map);
@@ -1821,7 +1829,7 @@ function selectDroneData() {
 			}
 		}); 
 	} else {
-		alert("지도를 사용할 수 없습니다.");
+		alert(getTranslate('canNotUseMap'));
 	}
 }
 function setCookie(name, value, exp) {
@@ -1882,7 +1890,7 @@ function openStitching(src) {
 		data : jsonData,          		     		 
 		success: function(data) {
 			if (data == 'N') {
-				alert("스티칭 이미지를 업로드 해야 합니다.");
+				alert(getTranslate('needToUploadStitchingImage'));
 			} else {
 				window.open(data, 'situation_stitching', 'width = ' + window.outerWidth + ', height = ' + window.outerHeight + ', top = 0, left = 0, location = no');		
 			}
@@ -1928,7 +1936,7 @@ function hideNotice(option) {
 		</a>
 	</div>
 	<div id="personNotice">
-		<span>최근 실시간 위치</span>
+		<span><spring:message code="situationBoard.latestRealTimeLocation" /></span>
 	</div>
 	<div id="recentDrone">
 		<a id="droneCenter" onclick="changeDroneCenter(); return false;" onmouseover="showNotice('drone');" onmouseout="hideNotice('drone');">
@@ -1936,12 +1944,12 @@ function hideNotice(option) {
 		</a>
 	</div>
 	<div id="droneNotice">
-		<span>최근 분석된 이미지 위치</span>
+		<span><spring:message code="situationBoard.RecentlyAnalyzedImageLocation" /></span>
 	</div>
 	<div class="btn_div">
 		<div id="setup_div">
 			<div id="btn_top">
-				설정
+				<spring:message code="situationBoard.setup" />
 				<span class="glyphicon glyphicon-cog" aria-hidden="true" id="btn_top_arrow"></span>
 			</div>
 			<div id="btn_bottom">
@@ -1950,39 +1958,39 @@ function hideNotice(option) {
 						<td id="date_td">
 							<div id="date_div">
 								<label>
-									<input name="date_btn" type="checkbox" id="date_btn" checked> 수색 일자 보기
+									<input name="date_btn" type="checkbox" id="date_btn" checked> <spring:message code="situationBoard.viewSearchDate" />
 								</label>
 								<div class="input-daterange" id="datepicker">
 								    <input type="text" class="input-small" name="start" id="date_start" />
 								    <span> ~ </span>
-								    <input type="text" class="input-small" name="end" id="date_end" />&nbsp;&nbsp;&nbsp;
-								    <button id="data_btn" onclick="selectDroneData();">적용</button>
+								    <input type="text" class="input-small" name="end" id="date_end" />
+								    <button id="data_btn" onclick="selectDroneData();"><spring:message code="situationBoard.apply" /></button>
 							    </div>
 							</div>
 						</td>
 						<td id="receive_td">
 							<div id="receive_div">
 								<label>
-									<input name="receive_btn" type="checkbox" id="receive_btn" checked> 실시간 업데이트
+									<input name="receive_btn" type="checkbox" id="receive_btn" checked> <spring:message code="situationBoard.realTimeUpdate" />
 								</label>
 							</div>
 						</td>
 						<td id="category_title_td">
 							<div>
 								<label>
-									카테고리
+									<spring:message code="situationBoard.category" />
 								</label>
 							</div>
 						</td>
 						<td id="category_content_td">
 							<div >
 								<label>
-									<input name="" type="checkbox" id="drone_btn" checked> 드론
+									<input name="" type="checkbox" id="drone_btn" checked> <spring:message code="situationBoard.drone" />
 								</label>
 							</div>
 							<div>
 								<label>
-									<input name="" type="checkbox" id="person_btn" checked> 수색경로 
+									<input name="" type="checkbox" id="person_btn" checked> <spring:message code="situationBoard.searchPath" />
 								</label>
 							</div>
 						</td>
@@ -1992,7 +2000,7 @@ function hideNotice(option) {
 		</div>
 		<div id="drone_notice">
 			<div id="drone_notice_top">
-				분석 히스토리
+				<spring:message code="situationBoard.analysisHistory" />
 				<span class="glyphicon glyphicon-list-alt" aria-hidden="true" id="drone_notice_top_arrow"></span>
 			</div>
 			<div id="drone_notice_bottom">

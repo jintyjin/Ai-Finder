@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,6 +21,7 @@
 <script src="./resources/js/lity.js"></script>
 <script src="./resources/js/bootstrap-slider.js"></script>
 <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<script type="text/javascript" src="./resources/js/translate/translate.js"></script> 
 <style>
 html, body {
 	width:100%;
@@ -1300,10 +1302,10 @@ function isChk(page_number, option) {
 <body> 
 <table class="viewer" style="width:100%; height:100%; margin:0; padding:0; border:none;">
 	<tr height="5%" style="background-color:#404040">
-		<td width="10%" style="padding-left:8px; background-color:#252525">카테고리</td>
-		<td width="10%" style="padding-left:8px;">감지된 이미지</td>
+		<td width="10%" style="padding-left:8px; background-color:#252525"><spring:message code="dashboard.category" /></td>
+		<td width="10%" style="padding-left:8px;"><spring:message code="dashboard.detectedImage" /></td>
 		<td width="15%" id="fileCount"></td>
-		<td width="*" align="right" style="padding:0px 30px 0px 8px;">검출 민감도
+		<td width="*" align="right" style="padding:0px 30px 0px 8px;"><spring:message code="dashboard.detectionSensitivity" />
 		</td>
 		<td width="10%" style="padding-right:8px;">
 			<input id="ex6" type="text" data-slider-handle="round" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0"/>
@@ -1312,7 +1314,7 @@ function isChk(page_number, option) {
 			<!-- <span id="ex6CurrentSliderValLabel"><span id="ex6SliderVal">0</span></span> -->
 		</td>
 		<td width="10%" align="right" style="padding-right:8px;">
-			<label class="checkbox-inline"><input type="checkbox" id="confidence" value="C" style="display:inline">정확도순 정렬</label>
+			<label class="checkbox-inline"><input type="checkbox" id="confidence" value="C" style="display:inline"><spring:message code="dashboard.sortByAccuracy" /></label>
 		</td>
 		<td width="1%" style="padding-right:8px;">
 			<label class="checkbox-inline">
@@ -1393,9 +1395,9 @@ function isChk(page_number, option) {
 							   			<span aria-hidden="true">&laquo;</span>
 									</a>
 								</li>
-								<li class="page-item" id="previous_one"><a class="page-link" href="#">이전</a></li>
+								<li class="page-item" id="previous_one"><a class="page-link" href="#"><spring:message code="common.previous" /></a></li>
 								<li class="page-item page active" id="page1"><a href="#">1</a></li>
-								<li class="page-item" id="next_one"><a class="page-link" href="#">다음</a></li>
+								<li class="page-item" id="next_one"><a class="page-link" href="#"><spring:message code="common.next" /></a></li>
 								<li id="next">
 									<a href="#" aria-label="Next">
 										<span aria-hidden="true">&raquo;</span>
