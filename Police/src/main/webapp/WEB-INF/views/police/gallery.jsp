@@ -431,7 +431,7 @@ $(document).ready(function () {
 						} else {
 							chk = '';
 						}
-						tagStr += '<li><input type="checkbox" class="all ' + class_name + '" id="' + color_id + '" ' + chk + ' onclick="isChk(null, ' + "'change_" + color_id + "'" + ');" name="' + color_id + '" /><label id="' + count + '" class="' + color_id + '" for="' + color_id + '">' + color_name + ' (' + count + ')</label></li>';
+						tagStr += '<li><input type="checkbox" class="all ' + class_name + '" id="' + color_id + '" ' + chk + ' onclick="isChk(null, ' + "'change_" + color_id + "'" + ');" name="' + color_id + '" /><label id="' + count + '" class="' + color_id + '" for="' + color_id + '">' + color_name.replace(' color', '..') + ' (' + count + ')</label></li>';
 						
 					}
 					tagStr += '</ul></li>';
