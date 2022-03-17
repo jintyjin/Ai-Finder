@@ -212,5 +212,7 @@ public class EventDao {
 	public void updateColorChecked(Map<String, Object> map) {
 		sqlSession.insert("sql.updateColorChecked", map);
 	}
-	
+	public String findCaseContentByCaseIdx(int case_idx) {
+		return sqlSession.selectOne("sql.findCaseContentByCaseIdx", case_idx);
+	}
 }

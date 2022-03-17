@@ -228,7 +228,7 @@ public class EventController {
 			mv.addObject("case_idx", case_idx);
 		}
 		if (case_content != null) {
-			mv.addObject("case_content", case_content);
+			mv.addObject("case_content", eventDao.findCaseContentByCaseIdx(Integer.parseInt(case_idx)));
 		}
 		
 		mv.setViewName("./police/main");

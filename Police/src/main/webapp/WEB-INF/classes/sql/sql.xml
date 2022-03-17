@@ -465,4 +465,9 @@
 		set tag_color_checked = #{checked}
 		where tag_class_name = split_part(#{tag_id}, '_', 1) and tag_color = split_part(#{tag_id}, '_', 2)
 	</insert>
+	<select id="findCaseContentByCaseIdx" parameterType="Integer" resultType="String">
+		select case_content
+		from police.case_info
+		where case_idx = #{case_idx}
+	</select>
 </mapper>
