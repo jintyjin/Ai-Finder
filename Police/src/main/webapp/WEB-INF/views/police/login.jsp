@@ -348,7 +348,7 @@ $(document).ready(function () {
 				} else if (data.json.return == "null") {
 					alert(getTranslate('specifyNewPassword'));
 				} else if (data.json.return == "success") {
-					alert(getTranslate('welcome') + data.user_id + getTranslate('sir'));
+					alert(getTranslate('welcome') + data.login_id + getTranslate('sir'));
 					setUserLogin(data);
 					$(window.parent.location).attr('href', './main.htm');
 					/* popupMenu('/police/gallery.htm');
