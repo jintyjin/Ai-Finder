@@ -290,6 +290,8 @@ var jsonDrawAllDb = new Object();
 var jsonImage = new Object();
 var jsonImageReal = new Object();
 
+var caseData = new Object();
+
 var lastLocPosition = new kakao.maps.LatLng(36.676425709615486, 127.50080489999998);
 var lastImagePosition = new kakao.maps.LatLng(36.676425709615486, 127.50080489999998);
 var mapContainer;
@@ -1824,6 +1826,186 @@ function selectDroneData() {
 					});
 					lastLocPosition = locPosition;
 				}
+/* 
+				var caseGpsData = data[2];
+
+				console.log(caseGpsData);
+				
+				Object.keys(caseData).forEach(function(k){
+					var endOverlay;
+					caseData[k].polyline.setMap(null);
+					caseData[k].circle.setMap(null);
+					caseData[k].startOverlay.setMap(null);
+					if (caseData[k].endOverlay != null) {
+						endOverlay = caseData[k].endOverlay;
+						endOverlay.setMap(null);
+					}
+					caseData[k].startMarker.setMap(null);
+					if (caseData[k].endMarker != null) {
+						endOverlay = caseData[k].endMarker;
+						endOverlay.setMap(null);
+					}
+				});
+				
+				caseData = new Object();
+				
+				if (caseGpsData.length > 0) {
+			        var imageSize = new kakao.maps.Size(37, 42); 
+				       
+			        // 마커 이미지를 생성합니다    
+			        var startImage = new kakao.maps.MarkerImage(startDroneSrc, imageSize); 
+			        var endImage = new kakao.maps.MarkerImage(endDroneSrc, imageSize); 
+			        
+					var tmpObj = new Object();
+					tmpObj.case_idx = "case";
+					caseGpsData.push(tmpObj);
+					
+					var rowNum = 0;
+
+					var linePath = [];
+					var circlePath = [];
+					var thumbList = [];
+					var colorList = [];
+					
+					var startOverlay;
+					var startMarker; 
+					var endOverlay;
+					var endMarker; 
+					
+					for (var i = 0; i < caseGpsData.length - 1; i++) {
+						var locPosition = new kakao.maps.LatLng(JSON.parse(caseGpsData[i]).gps_wtmx, JSON.parse(caseGpsData[i]).gps_wtmy);
+						linePath.push(locPosition);	
+						var thumb = JSON.parse(caseGpsData[i]).gps_image;
+						thumbList.push(thumb);
+						var case_idx = JSON.parse(caseGpsData[i]).case_idx;
+						var color = JSON.parse(caseGpsData[i]).gps_color;
+						colorList.push(color);
+						
+						// 동그라미 그리기
+						rowNum++;
+						
+						if (rowNum == 1) {
+							// start 마커 그리기
+					    	startMarker = new kakao.maps.Marker({
+								position: linePath[0], // 마커를 표시할 위치
+								image : startImage // 마커 이미지 
+							});
+							// start 마커 이벤트1 : 마우스 오른쪽 버튼 클릭 시 이벤트 선택 창 나와야됨
+							// start 마커 이벤트2 : 마우스 올리면 이어져 있는 선이 흰 색으로 바귐
+					    	kakao.maps.event.addListener(startMarker, 'mouseover', function() {
+					    		polyline.setOptions({
+					    		    strokeColor: 'white',
+					    		    zIndex:490
+					    		});
+					    		this.setZIndex(490);
+					    		if (caseData.case_idx.endMarker != null) {
+					    			caseData.case_idx.endMarker.setZIndex(490);
+					    		}
+					    		caseData.case_idx.startOverlay.setZIndex(480);
+					    		if (caseData.case_idx.endOverlay != null) {
+					    			caseData.case_idx.endOverlay.setZIndex(480);
+					    		}
+					    		circle.setZIndex(490);
+					    	});
+					    	kakao.maps.event.addListener(startMarker, 'mouseout', function() {
+					    		polyline.setOptions({
+					    		    strokeColor: 'red',
+					    		    zIndex:0
+					    		});
+					    		this.setZIndex(0);
+					    		if (caseData.case_idx.endMarker != null) {
+					    			caseData.case_idx.endMarker.setZIndex(0);
+					    		}
+					    		caseData.case_idx.startOverlay.setZIndex(0);
+					    		if (caseData.case_idx.endOverlay != null) {
+					    			caseData.case_idx.endOverlay.setZIndex(0);
+					    		}
+					    		circle.setZIndex(0);
+					    	});
+
+						    var iwContent2 = '<div class="overlay">' + 'case' + case_idx + '</div>' // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+						
+						    startOverlay = new kakao.maps.CustomOverlay({
+						        content: iwContent2,
+						        position: startMarker.getPosition()       
+						    });
+						}
+						
+						if (caseGpsData[i].case_idx != caseGpsData[i + 1].case_idx) {
+							colorList.push(color);
+
+							//positionObject.polyline = polyline;
+							//circlePath.push(circle);
+							//positionObject.circle = circlePath;
+							var positionObject = new Object();
+							positionObject.linePath = linePath;
+							positionObject.thumbList = thumbList;
+							positionObject.colorList = colorList;
+							positionObject.startTime = JSON.parse(caseGpsData[i]).imgTime;
+							positionObject.imgTime = JSON.parse(caseGpsData[i]).imgTime;
+
+							caseData.case_idx = positionObject;
+							//eval('caseData.' + case_idx + '= positionObject');
+							
+							if (rowNum > 1) {
+								// end 마커 그리기
+								// end 마커 이벤트1 : 마우스 올리면 이어져 있는 선이 흰 색으로 바귐
+								// 원을 잇는 라인 그리기
+						    	var endMarker = new kakao.maps.Marker({
+									position: locPosition, // 마커를 표시할 위치
+									image : endImage // 마커 이미지 
+								});
+	
+						    	kakao.maps.event.addListener(endMarker, 'mouseover', function() {
+						    		polyline.setOptions({
+						    		    strokeColor: 'white',
+						    		    zIndex:490
+						    		});
+						    		this.setZIndex(490);
+						    		caseData.case_idx.startMarker.setZIndex(490);
+						    		caseData.case_idx.startOverlay.setZIndex(480);
+						    		caseData.case_idx.endOverlay.setZIndex(480);
+						    	});
+						    	kakao.maps.event.addListener(endMarker, 'mouseout', function() {
+						    		polyline.setOptions({
+						    		    strokeColor: 'yellow',
+						    		    zIndex:0
+						    		});
+						    		this.setZIndex(0);
+						    		caseData.case_idx.startMarker.setZIndex(0);
+						    		caseData.case_idx.startOverlay.setZIndex(0);
+						    		caseData.case_idx.endOverlay.setZIndex(0);
+						    	});
+	
+						    	kakao.maps.event.addListener(endMarker, 'rightclick', function() {
+						    		var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + k + "'" + ');">' + getTranslate('open') + '</div><div class="rightDiv" onclick="openGallery(' + "'" + k + "'" + ');">' + getTranslate('gallery') + '</div><div class="rightDiv" onclick="openStitching(' + "'" + k + "'" + ');">' + getTranslate('stitchingView') + '</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + k + "'" + ');">' + getTranslate('droneRoute') + '</div></div>'
+						    		//var content = '<div id="rightOveray"><div class="rightDiv" onclick="openPage(' + "'" + k + "'" + ');">열기</div><div class="rightDiv" onclick="openGallery(' + "'" + k + "'" + ');">갤러리</div><div class="rightDiv" onclick="openStitching(' + "'" + k + "'" + ');">스티칭 뷰</div><div class="rightDiv" onclick="openDroneRoute(' + "'" + k + "'" + ');">드론 경로</div></div>'
+						    		customOverlay.setContent(content);
+						    		customOverlay.setPosition(linePath[linePath.length - 1]); 
+						    		customOverlay.setMap(map);
+						    	});
+						    	
+						    	jsonImage[k].endMarker = endMarker;
+						    	
+						    	var iwContent = '<div class="droneOverlay">' + jsonImage[k].imgTime + '</div>' // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+	
+							    var endOverlay = new kakao.maps.CustomOverlay({
+							        content: iwContent,
+							        position: endMarker.getPosition()       
+							    });
+	
+								jsonImage[k].endOverlay = endOverlay;
+								
+								if ($("input:checkbox[id='drone_btn']").is(":checked")) {
+									endMarker.setMap(map);
+									endOverlay.setMap(map);
+								}
+							}
+							rowNum = 0;
+						}
+					}
+				} */
+				
 			}, error: function(errorThrown) {
 				//alert(errorThrown.statusText);
 			}

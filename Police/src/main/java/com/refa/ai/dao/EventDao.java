@@ -13,6 +13,7 @@ import com.refa.ai.dto.CaseJsonDto;
 import com.refa.ai.dto.Case_info;
 import com.refa.ai.dto.GalleryDto;
 import com.refa.ai.dto.GpsDto;
+import com.refa.ai.dto.ReceiveGpsInfoDto;
 import com.refa.ai.dto.RoiDto;
 import com.refa.ai.dto.UserDto;
 import com.refa.ai.dto.VersionDto;
@@ -214,5 +215,8 @@ public class EventDao {
 	}
 	public String findCaseContentByCaseIdx(int case_idx) {
 		return sqlSession.selectOne("sql.findCaseContentByCaseIdx", case_idx);
+	}
+	public List<Map> findCaseGpsByProgress100(ReceiveGpsInfoDto receiveGpsInfoDto) {
+		return sqlSession.selectList("sql.findCaseGpsByProgress100", receiveGpsInfoDto);
 	}
 }

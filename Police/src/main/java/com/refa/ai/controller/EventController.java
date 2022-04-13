@@ -1277,13 +1277,15 @@ public class EventController {
 
 		List<ReceiveGpsInfoDto> receiveGpsInfoDto2 = finder.selectReceiveGpsInfoList3(receiveGpsInfoDto, conn);
 
+		List<Map> caseGpsList = eventDao.findCaseGpsByProgress100(receiveGpsInfoDto);
+		
 		List<List> list = new ArrayList<List>();
 		
 		list.add(receiveInfo);
 		list.add(receiveGpsInfoDto2);
+		list.add(caseGpsList);
 		
         long nano = System.currentTimeMillis();
-        System.out.println("지도 데이터 가져오는 시간 = " + (nano - start)/1000.0 + "초");
         
 		return list;
 	}

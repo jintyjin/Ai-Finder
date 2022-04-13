@@ -470,4 +470,24 @@
 		from police.case_info
 		where case_idx = #{case_idx}
 	</select>
+	<select id="findCaseGpsByProgress100" parameterType="com.refa.ai.dto.ReceiveGpsInfoDto" resultType="java.util.Map">
+		select * 
+		from police.gps_info
+		where case_idx in (
+			select c.case_idx
+			from police.case_info c
+			join (
+				select * from police.gps_info
+				where gps_imgname like '%/0.jpg%' 
+					and (to_timestamp(gps_imgtime::text, 'YYYY-MM-DD')::timestamp between #{receive_gps_la}::timestamp and #{receive_gps_ma}::timestamp)
+					and gps_wtmx is not null 
+					and gps_wtmy is not null
+				order by gps_idx desc
+			) g
+			on c.case_idx = g.case_idx
+			where c.case_progress = 100
+			order by c.case_idx desc
+		)
+		order by case_idx asc, gps_idx asc
+	</select>
 </mapper>
